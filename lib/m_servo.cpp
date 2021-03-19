@@ -1,34 +1,34 @@
 /****
 m_servo.cpp
-天津市大然科技有限公司-总线舵机�?
+å¤©æ´¥å¸‚å¤§ç„¶ç§‘æŠ€æœ‰é™å…¬å¸-æ€»çº¿èˆµæœºåº?
 
-舵机型号：大然A15-ST型舵�?
-适用平台：micropython平台（pyboard等）
-库版本号：v1.0
-测试主控版本：标准pyboard舵机主控�?v2.0
-测试人员：刘翠翠
-测试时间�?018.10.15
+èˆµæœºåž‹å·ï¼šå¤§ç„¶A15-STåž‹èˆµæœ?
+é€‚ç”¨å¹³å°ï¼šmicropythonå¹³å°ï¼ˆpyboardç­‰ï¼‰
+åº“ç‰ˆæœ¬å·ï¼šv1.0
+æµ‹è¯•ä¸»æŽ§ç‰ˆæœ¬ï¼šæ ‡å‡†pyboardèˆµæœºä¸»æŽ§æ?v2.0
+æµ‹è¯•äººå‘˜ï¼šåˆ˜ç¿ ç¿ 
+æµ‹è¯•æ—¶é—´ï¼?018.10.15
 
 
-代码版本：v1.0
-created in 2018.10.12   by 刘翠�?
+ä»£ç ç‰ˆæœ¬ï¼šv1.0
+created in 2018.10.12   by åˆ˜ç¿ ç¿?
 ******************/
 
 #include"m_servo.h"
 #include"Arduino.h"
 
-int servo_sdata[10]={ 0x7b,0x79,0,0,0,0,0x10,0x10,0x10,0x7d };  //发送数�? 10bit
+int servo_sdata[10]={ 0x7b,0x79,0,0,0,0,0x10,0x10,0x10,0x7d };  //å‘é€æ•°ç»? 10bit
 int servo_sdata1[4]={0x7E,0,0,0};
 int i,id_num,steps,rn,n,rem_step,id_number;
 float  angle;
 static char flag_serial = 0;
-double cur_angle=0; //返回 舵机实际角度
-double exp_angle;   //返回 期望角度
-int cur_mode;       //返回 当前模式
-int run_time;       //返回 运行时长
+double cur_angle=0; //è¿”å›ž èˆµæœºå®žé™…è§’åº¦
+double exp_angle;   //è¿”å›ž æœŸæœ›è§’åº¦
+int cur_mode;       //è¿”å›ž å½“å‰æ¨¡å¼
+int run_time;       //è¿”å›ž è¿è¡Œæ—¶é•¿
 String data;
 
-double servo_rpara[10];  //返回参数数组
+double servo_rpara[10];  //è¿”å›žå‚æ•°æ•°ç»„
 int servo_recvdata[16];
 int u_numm;
 
@@ -66,7 +66,7 @@ void m_servo::senddata(char kk)	{
 void m_servo::set_angle(int id_num, float  angle, int steps)
  {
     if(steps<=0)    steps=1;
-     //目前不支持负角度
+     //ç›®å‰ä¸æ”¯æŒè´Ÿè§’åº¦
     if(angle<0)    angle=0;
     if(angle>275)  angle=275;
     servo_sdata[0] = 123;
@@ -83,12 +83,12 @@ void m_servo::set_angle(int id_num, float  angle, int steps)
     delay(2);
 		servo_sdata[7]=17;
 		servo_sdata[6] = (servo_sdata[1]+servo_sdata[2]+servo_sdata[3]+servo_sdata[4]+servo_sdata[5]+servo_sdata[7]+servo_sdata[8])%100;
-		//串口发�?
+		//ä¸²å£å‘é€?
 		senddata(10);
    delay(2);
 }
 
-//多个舵机
+//å¤šä¸ªèˆµæœº
 void m_servo::set_angles(int id_list[20], float angle_list[20], int step,int n) 
 {
   if(n==1)
@@ -100,13 +100,13 @@ void m_servo::set_angles(int id_list[20], float angle_list[20], int step,int n)
 		    if(id_list[i]!=0)
 		    preset_angle(id_list[i],angle_list[i],step,1);     
       }
-      else   //n==0 则代表为第一组数�?id号可以为0 不需经过判断
+      else   //n==0 åˆ™ä»£è¡¨ä¸ºç¬¬ä¸€ç»„æ•°æ?idå·å¯ä»¥ä¸º0 ä¸éœ€ç»è¿‡åˆ¤æ–­
       {
 		    preset_angle(id_list[i],angle_list[i],step,1);     //
       }
 	    delay(2);
     }       
-    //多舵机同时开始转�?
+    //å¤šèˆµæœºåŒæ—¶å¼€å§‹è½¬åŠ?
 	  servo_sdata[1] = 121;
     servo_sdata[7]=17;
 	  servo_sdata[6] = (servo_sdata[1]+servo_sdata[2]+servo_sdata[3]+servo_sdata[4]+servo_sdata[5]+servo_sdata[7]+servo_sdata[8])%100;
@@ -138,7 +138,7 @@ void m_servo::set_angles(int id_list[20], float angle_list[20], int step,int n)
 		    delay(2);
       }
     }
-    //设置步数
+    //è®¾ç½®æ­¥æ•°
     servo_sdata1[0] = 0x7E;
     servo_sdata1[1] = (int)(step/100);
     servo_sdata1[2] =  (int)((int)step%100);
@@ -149,7 +149,7 @@ void m_servo::set_angles(int id_list[20], float angle_list[20], int step,int n)
 }
 
 
-//设置舵机模式
+//è®¾ç½®èˆµæœºæ¨¡å¼
 void m_servo::change_mode(int id_num, int mode_num)
 {
     servo_sdata[0] = 123;
@@ -163,7 +163,7 @@ void m_servo::change_mode(int id_num, int mode_num)
     delay(2);
 }
 
-//设置舵机编号
+//è®¾ç½®èˆµæœºç¼–å·
 
 void m_servo::set_id(int id_num, int id_new)
 {
@@ -180,14 +180,14 @@ void m_servo::set_id(int id_num, int id_new)
     servo_sdata[1] = id_num;
 	  servo_sdata[2] = id_new;
     servo_sdata[7] = 0x44;
-    servo_sdata[8] = 0;  //ID号在E2中的地址�?
+    servo_sdata[8] = 0;  //IDå·åœ¨E2ä¸­çš„åœ°å€ä¸?
     servo_sdata[9] = 125;
 	  servo_sdata[6] = (servo_sdata[1]+servo_sdata[2]+servo_sdata[3]+servo_sdata[4]+servo_sdata[5]+servo_sdata[7]+servo_sdata[8])%100;
     senddata(10);
 	  delay(2);
 }   
 
-//设置PID  P参数
+//è®¾ç½®PID  På‚æ•°
 void m_servo::set_pid(int id_num,int pid)
 {
 	  servo_sdata[0] = 123;
@@ -212,7 +212,7 @@ void m_servo::set_pid(int id_num,int pid)
 	  delay(2);
 }
 
-//设置轮子模式下速度
+//è®¾ç½®è½®å­æ¨¡å¼ä¸‹é€Ÿåº¦
 void m_servo::set_speed(int id_num,int speed)
 {
    servo_sdata[0] = 123;
@@ -244,9 +244,9 @@ void m_servo::set_speed(int id_num,int speed)
 	  delay(2);
 }
 
-//舵机返回�?
+//èˆµæœºè¿”å›žå€?
 
-float m_servo::get_state(int id_num, int para_num,int o_m)   //特别注意 不能多个舵机同时返回数据 即除使用一个舵机外、不允许使用广播模式�?21�?
+float m_servo::get_state(int id_num, int para_num,int o_m)   //ç‰¹åˆ«æ³¨æ„ ä¸èƒ½å¤šä¸ªèˆµæœºåŒæ—¶è¿”å›žæ•°æ® å³é™¤ä½¿ç”¨ä¸€ä¸ªèˆµæœºå¤–ã€ä¸å…è®¸ä½¿ç”¨å¹¿æ’­æ¨¡å¼ï¼?21ï¼?
 {
   if (id_num == 121 && o_m == 0)
   {
@@ -312,10 +312,10 @@ float m_servo::get_state(int id_num, int para_num,int o_m)   //特别注意 不�
           servo_rpara[4]= cur_mode; 
       }   
    }
-   else return -1;  //返回数据失败  可做读取失败标志�?
+   else return -1;  //è¿”å›žæ•°æ®å¤±è´¥  å¯åšè¯»å–å¤±è´¥æ ‡å¿—ä½?
   }
 }
-//写E2PROM
+//å†™E2PROM
 void m_servo::write_e2(int id_num, int address, int value)
 {
     servo_sdata[0] = 123;
@@ -335,13 +335,13 @@ void m_servo::write_e2(int id_num, int address, int value)
     servo_sdata[1] = id_num;
     servo_sdata[2] = value;
     servo_sdata[7] = 0x44;
-    servo_sdata[8] = address;  //E2中的地址
+    servo_sdata[8] = address;  //E2ä¸­çš„åœ°å€
     servo_sdata[9] = 125;
     servo_sdata[6] = (servo_sdata[1]+servo_sdata[2]+servo_sdata[3]+servo_sdata[4]+servo_sdata[5]+servo_sdata[7]+servo_sdata[8])%100;
     senddata(10);
     delay(2);
 }
-//读E2PROM指定地址的参数�?
+//è¯»E2PROMæŒ‡å®šåœ°å€çš„å‚æ•°å€?
 int m_servo::read_e2(int id_num, int address)
 {
     servo_sdata[0] = 123;
@@ -383,10 +383,10 @@ int m_servo::read_e2(int id_num, int address)
    {
      return servo_recvdata[3];
    }
-    else return -1;  //返回数据失败  可做读取失败标志�?
+    else return -1;  //è¿”å›žæ•°æ®å¤±è´¥  å¯åšè¯»å–å¤±è´¥æ ‡å¿—ä½?
     
 }
-//返回E2PROM的全部参数�?
+//è¿”å›žE2PROMçš„å…¨éƒ¨å‚æ•°å€?
 void m_servo::read_e2_all(int id_num)
 {
     servo_sdata[0] = 123;
@@ -425,10 +425,10 @@ void m_servo::read_e2_all(int id_num)
    }
    if(u_numm==num)
    {
-     //接收到的数据保存在servo_recvdata[]�?
+     //æŽ¥æ”¶åˆ°çš„æ•°æ®ä¿å­˜åœ¨servo_recvdata[]ä¸?
    }
 }
-//E2PROM初始�?
+//E2PROMåˆå§‹åŒ?
 void m_servo::e2_init(int id_num)
 {
     servo_sdata[0] = 123;
@@ -448,7 +448,7 @@ void m_servo::e2_init(int id_num)
 void m_servo::preset_angle(int id_num, float  angle, int steps, int rn)
  {
     if(steps<=0)    steps=1;
-     //目前不支持负角度
+     //ç›®å‰ä¸æ”¯æŒè´Ÿè§’åº¦
     if(angle<0)    angle=0;
     if(angle>275)  angle=275;
     servo_sdata[0] = 123;
@@ -472,7 +472,7 @@ void m_servo::preset_angle(int id_num, float  angle, int steps, int rn)
       }
     
 }
-//������ת���� 
+//½âËø¶Â×ª±£»¤ 
 void m_servo::unlock(int id_num)
 {
     servo_sdata[0] = 123;
